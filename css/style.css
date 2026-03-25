@@ -1,0 +1,49 @@
+body {
+  font-family: 'Inter', sans-serif;
+  background: #f6f6f6;
+}
+
+/* Navbar */
+.navbar {
+  background: #e53935;
+  color: white;
+}
+
+/* Card */
+.card {
+  background: white;
+  border-radius: 16px;
+  padding: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  transition: 0.2s;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+}
+
+/* Button */
+.btn {
+  background: #e53935;
+  color: white;
+  padding: 8px 14px;
+  border-radius: 8px;
+}
+
+.btn-outline {
+  border: 2px solid white;
+  padding: 6px 12px;
+  border-radius: 10px;
+}
+
+/* Scroll TikTok */
+.scroll-x {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+}
+
+/* Food Card */
+.food-card img {
+  border-radius: 12px;
+}
