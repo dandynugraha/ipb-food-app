@@ -1,1 +1,27 @@
+<input id="search" placeholder="Cari makanan..." class="p-2 border w-full">
 
+<div id="menuList"></div>
+
+<script>
+const data = [
+  {nama:"Ayam Geprek", harga:10000},
+  {nama:"Bakso", harga:12000}
+];
+
+function render(items){
+  document.getElementById("menuList").innerHTML =
+    items.map(i=>`
+      <div class="p-3 bg-white shadow mb-2">
+        <h3>${i.nama}</h3>
+        <p>Rp ${i.harga}</p>
+        <button onclick="order()" class="bg-green-500 text-white px-2">Order</button>
+      </div>
+    `).join("");
+}
+
+function order(){
+  alert("Pre-order berhasil 🎉");
+}
+
+render(data);
+</script>
