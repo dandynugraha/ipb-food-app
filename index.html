@@ -1,46 +1,103 @@
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link rel="stylesheet" href="css/style.css">
 <script src="https://cdn.tailwindcss.com"></script>
+
+<title>IPB Makan</title>
 </head>
 
-<body class="bg-gray-100">
+<body>
 
-<!-- NAV -->
-<div class="bg-red-500 p-4 flex justify-between text-white">
+<!-- NAVBAR -->
+<div class="navbar flex justify-between items-center px-6 py-4">
   <div class="flex items-center gap-2">
-    <img src="assets/logo.png" class="w-8">
-    <h1 class="font-bold">IPB Makan</h1>
+    <img src="assets/logo.png" class="w-10">
+    <h1 class="font-bold text-lg">IPB Makan</h1>
   </div>
 
-  <div>
-    <a href="login.html" class="mr-3">Login</a>
-    <a href="register.html">Sign Up</a>
+  <div class="flex gap-2">
+    <a href="login.html" class="btn-outline">Sign-in</a>
+    <a href="register.html" class="bg-white text-red-500 px-4 py-1 rounded-full font-semibold">Log-in</a>
   </div>
 </div>
 
 <!-- HERO -->
-<div class="p-6">
-  <h2 class="text-3xl font-bold mb-4">MAU JAJAN APA HARI INI BESS??</h2>
+<div class="px-6 mt-6">
+  <h1 class="text-3xl font-bold mb-4">
+    MAU JAJAN APA HARI INI BESS??
+  </h1>
 
   <div class="grid grid-cols-3 gap-4">
-    <div class="col-span-2 bg-yellow-400 p-6 rounded">PROMO FOOD</div>
-    <div class="bg-orange-300 p-6 rounded">BURGER</div>
+
+    <!-- BIG CARD -->
+    <div class="col-span-2 bg-yellow-400 rounded-2xl p-6 flex items-center justify-between">
+      <div>
+        <p class="text-sm">Fast Food</p>
+        <h2 class="text-2xl font-bold mt-2">FRESH, BOLD & TASTY</h2>
+        <button class="btn mt-4">Shop Now</button>
+      </div>
+      <img src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd" class="w-40">
+    </div>
+
+    <!-- SIDE CARDS -->
+    <div class="flex flex-col gap-4">
+      <div class="bg-orange-300 rounded-2xl p-4">
+        <h3 class="font-bold">Beef Burger</h3>
+      </div>
+      <div class="bg-red-300 rounded-2xl p-4">
+        <h3 class="font-bold">Cheese Melt</h3>
+      </div>
+    </div>
+
   </div>
 </div>
 
-<!-- VIDEO TIKTOK -->
-<div class="p-6">
-  <h2 class="text-2xl font-bold mb-4">VIDEO MAKAN IPB</h2>
+<!-- REKOMENDASI -->
+<div class="px-6 mt-8">
+  <h2 class="text-2xl font-bold mb-4">Butuh Referensi?</h2>
 
-  <div class="flex gap-4 overflow-x-auto">
+  <div class="grid grid-cols-4 gap-4">
 
-    <!-- VIDEO 1 -->
+    <!-- CARD -->
+    <div class="card food-card">
+      <img src="https://images.unsplash.com/photo-1600891964599-f61ba0e24092">
+      <h3 class="font-bold mt-2">Ayam Geprek</h3>
+      <p class="text-gray-500 text-sm">Rp 10.000</p>
+      <button class="btn mt-2 w-full">Add</button>
+    </div>
+
+    <div class="card food-card">
+      <img src="https://images.unsplash.com/photo-1550547660-d9450f859349">
+      <h3 class="font-bold mt-2">Burger</h3>
+      <p class="text-gray-500 text-sm">Rp 15.000</p>
+      <button class="btn mt-2 w-full">Add</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- TIKTOK -->
+<div class="px-6 mt-10">
+  <h2 class="text-2xl font-bold mb-4">Video Makan IPB</h2>
+
+  <div class="scroll-x">
+
     <blockquote class="tiktok-embed"
       cite="https://www.tiktok.com/@ipbmakan"
       data-unique-id="ipbmakan"
       data-embed-type="creator"
-      style="max-width: 300px;">
+      style="max-width: 250px;">
+    </blockquote>
+
+    <blockquote class="tiktok-embed"
+      cite="https://www.tiktok.com/@ipbmakan"
+      data-unique-id="ipbmakan"
+      data-embed-type="creator"
+      style="max-width: 250px;">
     </blockquote>
 
   </div>
