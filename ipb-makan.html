@@ -1,0 +1,2012 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IPB Makan — Super App Ekosistem Pangan Kampus</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+/* ===================== RESET & ROOT ===================== */
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#FFFFFF;
+  --surface:#F8FAFC;
+  --surface2:#F1F5F9;
+  --surface3:#E2E8F0;
+  --primary:#0F172A;
+  --primary2:#1E293B;
+  --accent:#F97316;
+  --accent2:#FB923C;
+  --green:#22C55E;
+  --green2:#16A34A;
+  --blue:#3B82F6;
+  --text1:#0F172A;
+  --text2:#475569;
+  --text3:#94A3B8;
+  --border:#E2E8F0;
+  --border2:#CBD5E1;
+  --r-xs:8px; --r-sm:12px; --r-md:16px; --r-lg:20px; --r-xl:24px;
+  --shadow-sm:0 1px 8px rgba(15,23,42,0.06);
+  --shadow:0 4px 20px rgba(15,23,42,0.08);
+  --shadow-lg:0 8px 40px rgba(15,23,42,0.12);
+  --shadow-xl:0 16px 64px rgba(15,23,42,0.16);
+  --glass:rgba(255,255,255,0.82);
+  --transition:all 0.22s cubic-bezier(0.4,0,0.2,1);
+}
+
+html{scroll-behavior:smooth}
+body{
+  font-family:'Plus Jakarta Sans',sans-serif;
+  background:var(--bg);
+  color:var(--text1);
+  min-height:100vh;
+  overflow-x:hidden;
+}
+
+/* ===================== LAYOUT ===================== */
+.app{display:flex;min-height:100vh}
+
+/* ===================== SIDEBAR ===================== */
+.sidebar{
+  width:260px;
+  background:var(--primary);
+  display:flex;
+  flex-direction:column;
+  position:fixed;
+  top:0;left:0;bottom:0;
+  z-index:200;
+  transition:var(--transition);
+  overflow:hidden;
+}
+.sidebar-logo{
+  padding:28px 24px 20px;
+  display:flex;align-items:center;gap:12px;
+  border-bottom:1px solid rgba(255,255,255,0.06);
+  cursor:pointer;
+  text-decoration:none;
+}
+.logo-mark{
+  width:40px;height:40px;
+  background:linear-gradient(135deg,var(--accent),#fb923c);
+  border-radius:var(--r-sm);
+  display:flex;align-items:center;justify-content:center;
+  font-size:20px;
+  flex-shrink:0;
+  box-shadow:0 4px 16px rgba(249,115,22,0.4);
+}
+.logo-text{
+  color:#fff;
+  font-size:18px;font-weight:800;
+  letter-spacing:-0.3px;
+}
+.logo-sub{color:rgba(255,255,255,0.4);font-size:11px;font-weight:500;margin-top:1px}
+
+.nav-section{padding:20px 16px 8px;flex:1;overflow-y:auto}
+.nav-section::-webkit-scrollbar{width:0}
+.nav-label{color:rgba(255,255,255,0.3);font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:0 8px;margin-bottom:6px;margin-top:16px}
+.nav-label:first-child{margin-top:0}
+
+.nav-item{
+  display:flex;align-items:center;gap:12px;
+  padding:11px 12px;
+  border-radius:var(--r-sm);
+  cursor:pointer;
+  transition:var(--transition);
+  color:rgba(255,255,255,0.5);
+  font-size:14px;font-weight:600;
+  margin-bottom:2px;
+  position:relative;
+}
+.nav-item:hover{background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.85)}
+.nav-item.active{background:rgba(249,115,22,0.15);color:#fff}
+.nav-item.active::before{
+  content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);
+  width:3px;height:20px;background:var(--accent);border-radius:0 2px 2px 0;
+}
+.nav-item .nav-icon{
+  width:20px;height:20px;flex-shrink:0;opacity:0.7;
+}
+.nav-item.active .nav-icon{opacity:1}
+.nav-badge{
+  margin-left:auto;
+  background:var(--accent);color:#fff;
+  font-size:10px;font-weight:800;
+  padding:2px 7px;border-radius:20px;
+}
+
+.sidebar-bottom{
+  padding:16px;
+  border-top:1px solid rgba(255,255,255,0.06);
+}
+.user-card{
+  display:flex;align-items:center;gap:10px;
+  padding:12px;
+  background:rgba(255,255,255,0.05);
+  border-radius:var(--r-sm);
+  cursor:pointer;
+  transition:var(--transition);
+}
+.user-card:hover{background:rgba(255,255,255,0.08)}
+.user-ava{
+  width:36px;height:36px;border-radius:50%;
+  background:linear-gradient(135deg,var(--accent),#fb923c);
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;font-weight:800;color:#fff;flex-shrink:0;
+}
+.user-name{color:#fff;font-size:13px;font-weight:700}
+.user-role{color:rgba(255,255,255,0.4);font-size:11px;margin-top:1px}
+
+/* ===================== MAIN CONTENT ===================== */
+.main{
+  margin-left:260px;
+  flex:1;
+  min-height:100vh;
+  transition:var(--transition);
+}
+
+/* ===================== TOPBAR ===================== */
+.topbar{
+  position:sticky;top:0;z-index:100;
+  background:var(--glass);
+  backdrop-filter:blur(20px);
+  -webkit-backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+  padding:0 32px;
+  height:64px;
+  display:flex;align-items:center;gap:16px;
+}
+.topbar-title{font-size:20px;font-weight:800;flex:1}
+.topbar-search{
+  display:flex;align-items:center;gap:8px;
+  background:var(--surface);
+  border:1.5px solid var(--border);
+  border-radius:var(--r-md);
+  padding:8px 16px;
+  flex:1;max-width:400px;
+  transition:var(--transition);
+}
+.topbar-search:focus-within{border-color:var(--accent);background:#fff;box-shadow:0 0 0 3px rgba(249,115,22,0.1)}
+.topbar-search svg{flex-shrink:0;color:var(--text3)}
+.topbar-search input{background:none;border:none;outline:none;font-family:inherit;font-size:14px;color:var(--text1);flex:1}
+.topbar-search input::placeholder{color:var(--text3)}
+.topbar-actions{display:flex;align-items:center;gap:10px}
+.icon-btn{
+  width:40px;height:40px;
+  border-radius:var(--r-sm);
+  background:var(--surface);
+  border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;transition:var(--transition);
+  color:var(--text2);
+  position:relative;
+}
+.icon-btn:hover{background:var(--surface2);border-color:var(--border2);color:var(--text1)}
+.notif-dot{
+  position:absolute;top:8px;right:8px;
+  width:7px;height:7px;
+  background:var(--accent);border-radius:50%;
+  border:2px solid var(--bg);
+}
+
+/* ===================== PAGES ===================== */
+.page{display:none;padding:32px;animation:fadeUp 0.3s ease both}
+.page.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+/* ===================== LOADING ===================== */
+.loading-overlay{
+  position:fixed;inset:0;
+  background:rgba(255,255,255,0.9);
+  backdrop-filter:blur(4px);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  z-index:9999;gap:16px;
+  transition:opacity 0.3s;
+}
+.loading-overlay.hidden{opacity:0;pointer-events:none}
+.spinner{
+  width:40px;height:40px;
+  border:3px solid var(--border);
+  border-top-color:var(--accent);
+  border-radius:50%;
+  animation:spin 0.7s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-text{font-size:14px;font-weight:600;color:var(--text2)}
+
+/* ===================== HERO (HOME) ===================== */
+.hero{
+  background:var(--primary);
+  border-radius:var(--r-xl);
+  padding:40px;
+  position:relative;overflow:hidden;
+  margin-bottom:28px;
+}
+.hero::before{
+  content:'';position:absolute;
+  top:-80px;right:-80px;
+  width:320px;height:320px;
+  background:var(--accent);
+  border-radius:50%;opacity:0.08;
+}
+.hero::after{
+  content:'';position:absolute;
+  bottom:-60px;left:100px;
+  width:200px;height:200px;
+  background:var(--green);
+  border-radius:50%;opacity:0.06;
+}
+.hero-inner{position:relative;z-index:1}
+.hero-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:28px}
+.hero-greet{color:rgba(255,255,255,0.55);font-size:14px;font-weight:500;margin-bottom:4px}
+.hero-title{color:#fff;font-size:28px;font-weight:800;line-height:1.2;letter-spacing:-0.5px}
+.hero-badge{
+  background:rgba(249,115,22,0.2);
+  border:1px solid rgba(249,115,22,0.3);
+  border-radius:var(--r-sm);
+  padding:8px 16px;
+  color:var(--accent);
+  font-size:12px;font-weight:700;
+  display:flex;align-items:center;gap:6px;
+}
+.hero-stats{display:flex;gap:32px}
+.h-stat-val{color:#fff;font-size:22px;font-weight:800}
+.h-stat-lbl{color:rgba(255,255,255,0.45);font-size:12px;font-weight:500;margin-top:2px}
+.hero-divider{width:1px;background:rgba(255,255,255,0.1);align-self:stretch}
+
+/* ===================== SECTION HEADERS ===================== */
+.section-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+.section-title{font-size:18px;font-weight:800;letter-spacing:-0.3px}
+.section-sub{font-size:13px;color:var(--text3);font-weight:500;margin-top:2px}
+.see-all{
+  font-size:13px;font-weight:700;color:var(--accent);
+  cursor:pointer;background:none;border:none;
+  display:flex;align-items:center;gap:4px;
+  transition:var(--transition);
+  padding:6px 12px;border-radius:var(--r-sm);
+}
+.see-all:hover{background:rgba(249,115,22,0.08)}
+
+/* ===================== CARDS ===================== */
+.card{
+  background:var(--bg);
+  border:1px solid var(--border);
+  border-radius:var(--r-lg);
+  box-shadow:var(--shadow-sm);
+  transition:var(--transition);
+}
+.card:hover{box-shadow:var(--shadow);transform:translateY(-2px);border-color:var(--border2)}
+
+/* ===================== FOOD GRID ===================== */
+.food-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:18px}
+.food-card{
+  background:var(--bg);
+  border:1px solid var(--border);
+  border-radius:var(--r-lg);
+  overflow:hidden;
+  cursor:pointer;
+  transition:var(--transition);
+  box-shadow:var(--shadow-sm);
+}
+.food-card:hover{transform:translateY(-4px);box-shadow:var(--shadow-lg);border-color:rgba(249,115,22,0.2)}
+.food-img{
+  height:140px;
+  background:var(--surface);
+  display:flex;align-items:center;justify-content:center;
+  font-size:56px;
+  position:relative;
+}
+.food-img-overlay{
+  position:absolute;inset:0;
+  background:linear-gradient(to bottom,transparent 50%,rgba(15,23,42,0.04));
+}
+.fc-badges{position:absolute;top:10px;left:10px;display:flex;gap:5px}
+.badge{
+  font-size:10px;font-weight:800;
+  padding:4px 10px;border-radius:30px;
+  backdrop-filter:blur(4px);
+}
+.badge-hot{background:rgba(249,115,22,0.92);color:#fff}
+.badge-cheap{background:rgba(34,197,94,0.92);color:#fff}
+.badge-new{background:rgba(59,130,246,0.92);color:#fff}
+.badge-best{background:var(--primary);color:#fff}
+.food-body{padding:14px}
+.food-name{font-size:14px;font-weight:700;margin-bottom:4px;line-height:1.3}
+.food-umkm{font-size:12px;color:var(--text3);font-weight:500;margin-bottom:10px;display:flex;align-items:center;gap:4px}
+.food-footer{display:flex;align-items:center;justify-content:space-between}
+.food-price{font-size:16px;font-weight:800;color:var(--accent)}
+.food-meta{display:flex;align-items:center;gap:8px}
+.star-row{display:flex;align-items:center;gap:3px;font-size:12px;font-weight:700;color:var(--text2)}
+.star-icon{color:var(--accent);font-size:11px}
+.add-btn{
+  width:32px;height:32px;
+  background:var(--accent);
+  border:none;border-radius:var(--r-sm);
+  color:#fff;font-size:18px;font-weight:700;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:var(--transition);
+  box-shadow:0 2px 8px rgba(249,115,22,0.3);
+}
+.add-btn:hover{transform:scale(1.1);background:#ea6c10}
+.add-btn.added{background:var(--green);box-shadow:0 2px 8px rgba(34,197,94,0.3)}
+
+/* ===================== CATEGORY CHIPS ===================== */
+.cat-scroll{display:flex;gap:10px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none;margin-bottom:24px}
+.cat-scroll::-webkit-scrollbar{display:none}
+.cat-chip{
+  display:flex;align-items:center;gap:8px;
+  padding:10px 18px;
+  border-radius:30px;
+  border:1.5px solid var(--border);
+  background:var(--bg);
+  font-size:13px;font-weight:700;
+  cursor:pointer;white-space:nowrap;
+  transition:var(--transition);
+  color:var(--text2);flex-shrink:0;
+}
+.cat-chip:hover{border-color:var(--accent);color:var(--accent);background:rgba(249,115,22,0.04)}
+.cat-chip.active{background:var(--accent);border-color:var(--accent);color:#fff;box-shadow:0 4px 12px rgba(249,115,22,0.3)}
+.cat-emoji{font-size:16px}
+
+/* ===================== UMKM LIST (EXPLORE) ===================== */
+.umkm-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:18px}
+.umkm-card{
+  background:var(--bg);
+  border:1px solid var(--border);
+  border-radius:var(--r-lg);
+  padding:20px;
+  display:flex;gap:16px;
+  cursor:pointer;
+  transition:var(--transition);
+  box-shadow:var(--shadow-sm);
+}
+.umkm-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg);border-color:rgba(249,115,22,0.2)}
+.umkm-avatar{
+  width:64px;height:64px;flex-shrink:0;
+  background:var(--surface);
+  border-radius:var(--r-md);
+  display:flex;align-items:center;justify-content:center;
+  font-size:30px;
+  border:1px solid var(--border);
+}
+.umkm-info{flex:1;min-width:0}
+.umkm-name{font-size:15px;font-weight:800;margin-bottom:6px}
+.umkm-tags{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px}
+.utag{
+  font-size:10px;font-weight:700;
+  padding:3px 9px;border-radius:20px;
+  background:var(--surface);color:var(--text2);
+}
+.utag.hot{background:rgba(249,115,22,0.1);color:var(--accent)}
+.utag.cheap{background:rgba(34,197,94,0.1);color:var(--green)}
+.utag.fast{background:rgba(59,130,246,0.1);color:var(--blue)}
+.umkm-row{display:flex;align-items:center;gap:10px;font-size:12px;color:var(--text3);margin-top:4px}
+.umkm-rating-big{
+  display:flex;align-items:center;gap:4px;
+  font-size:13px;font-weight:800;color:var(--text1);
+}
+
+/* ===================== FILTERS ===================== */
+.filter-bar{
+  display:flex;align-items:center;gap:10px;
+  margin-bottom:24px;
+  flex-wrap:wrap;
+}
+.filter-pill{
+  padding:8px 16px;
+  border-radius:30px;
+  border:1.5px solid var(--border);
+  background:var(--bg);
+  font-size:12px;font-weight:700;
+  cursor:pointer;
+  transition:var(--transition);
+  color:var(--text2);
+}
+.filter-pill:hover{border-color:var(--primary);color:var(--primary)}
+.filter-pill.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+
+/* ===================== DETAIL PAGE ===================== */
+.detail-hero{
+  background:var(--primary);
+  border-radius:var(--r-xl);
+  padding:40px;
+  margin-bottom:0;
+  position:relative;overflow:hidden;
+  display:flex;align-items:center;gap:32px;
+}
+.detail-hero::before{content:'';position:absolute;top:-60px;right:-60px;width:240px;height:240px;background:var(--accent);border-radius:50%;opacity:0.1}
+.detail-emoji-wrap{
+  width:100px;height:100px;
+  background:rgba(255,255,255,0.1);
+  border-radius:var(--r-xl);
+  display:flex;align-items:center;justify-content:center;
+  font-size:52px;
+  flex-shrink:0;
+  border:1px solid rgba(255,255,255,0.1);
+}
+.detail-info{flex:1;position:relative;z-index:1}
+.detail-name{color:#fff;font-size:26px;font-weight:800;margin-bottom:6px;letter-spacing:-0.5px}
+.detail-desc{color:rgba(255,255,255,0.6);font-size:14px;margin-bottom:16px;line-height:1.5}
+.detail-stats-row{display:flex;gap:24px}
+.ds{text-align:center}
+.ds-val{color:#fff;font-size:18px;font-weight:800}
+.ds-lbl{color:rgba(255,255,255,0.45);font-size:11px;margin-top:2px}
+.ds-div{width:1px;background:rgba(255,255,255,0.1);align-self:stretch}
+
+.detail-content{
+  display:grid;grid-template-columns:1fr 360px;gap:24px;
+  margin-top:24px;
+  align-items:start;
+}
+
+/* Menu Section */
+.menu-section{background:var(--bg);border:1px solid var(--border);border-radius:var(--r-xl);overflow:hidden}
+.menu-section-head{padding:20px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.menu-section-title{font-size:15px;font-weight:800}
+.menu-items-wrap{padding:8px 0}
+.menu-item{
+  display:flex;align-items:center;gap:16px;
+  padding:16px 24px;
+  cursor:pointer;
+  transition:var(--transition);
+  border-bottom:1px solid var(--border);
+}
+.menu-item:last-child{border-bottom:none}
+.menu-item:hover{background:var(--surface)}
+.mi-emoji{font-size:32px;width:48px;text-align:center;flex-shrink:0}
+.mi-info{flex:1}
+.mi-name{font-size:14px;font-weight:700;margin-bottom:4px;display:flex;align-items:center;gap:6px}
+.mi-desc{font-size:12px;color:var(--text3);line-height:1.4}
+.mi-price{font-size:15px;font-weight:800;color:var(--accent);margin-top:6px}
+.mi-best{
+  background:var(--accent);color:#fff;
+  font-size:9px;font-weight:800;
+  padding:2px 7px;border-radius:20px;
+}
+.qty-ctrl{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.qty-btn{
+  width:30px;height:30px;
+  border-radius:var(--r-sm);
+  border:1.5px solid var(--border);
+  background:var(--bg);
+  font-size:16px;font-weight:700;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:var(--transition);
+  color:var(--text1);
+}
+.qty-btn:hover{border-color:var(--accent);color:var(--accent)}
+.qty-btn.plus{background:var(--accent);border-color:var(--accent);color:#fff}
+.qty-btn.plus:hover{background:#ea6c10}
+.qty-num{font-size:14px;font-weight:800;min-width:20px;text-align:center}
+
+/* Order Panel */
+.order-panel{
+  background:var(--bg);
+  border:1px solid var(--border);
+  border-radius:var(--r-xl);
+  position:sticky;top:96px;
+}
+.op-head{padding:20px 24px;border-bottom:1px solid var(--border)}
+.op-title{font-size:15px;font-weight:800}
+.op-items{padding:8px 24px;max-height:300px;overflow-y:auto}
+.op-items::-webkit-scrollbar{width:4px}
+.op-items::-webkit-scrollbar-track{background:var(--surface)}
+.op-items::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+.op-item{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border)}
+.op-item:last-child{border-bottom:none}
+.op-item-name{font-size:13px;font-weight:600;flex:1}
+.op-item-qty{font-size:12px;color:var(--text3);margin-top:2px}
+.op-item-price{font-size:13px;font-weight:800;color:var(--accent)}
+.op-empty{padding:32px 24px;text-align:center;color:var(--text3);font-size:13px}
+.op-empty-icon{font-size:32px;margin-bottom:8px}
+.op-summary{padding:16px 24px;border-top:1px solid var(--border)}
+.op-row{display:flex;justify-content:space-between;font-size:13px;color:var(--text2);margin-bottom:8px}
+.op-row.final{font-size:16px;font-weight:800;color:var(--text1);margin-top:8px;padding-top:8px;border-top:1px solid var(--border)}
+.op-row.discount{color:var(--green)}
+.op-btn{
+  width:100%;margin:16px 24px 20px;
+  width:calc(100% - 48px);
+  background:linear-gradient(135deg,var(--accent),#fb923c);
+  color:#fff;border:none;
+  border-radius:var(--r-md);
+  padding:14px;
+  font-family:inherit;font-size:15px;font-weight:800;
+  cursor:pointer;transition:var(--transition);
+  box-shadow:0 4px 16px rgba(249,115,22,0.35);
+}
+.op-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(249,115,22,0.4)}
+.op-btn:disabled{background:var(--surface);color:var(--text3);box-shadow:none;transform:none;cursor:not-allowed}
+
+/* Reviews */
+.reviews-section{margin-top:24px;background:var(--bg);border:1px solid var(--border);border-radius:var(--r-xl);overflow:hidden}
+.reviews-head{padding:20px 24px;border-bottom:1px solid var(--border)}
+.review-card{padding:16px 24px;border-bottom:1px solid var(--border)}
+.review-card:last-child{border-bottom:none}
+.review-top{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.rev-ava{width:32px;height:32px;border-radius:50%;background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:var(--text2)}
+.rev-name{font-size:13px;font-weight:700}
+.rev-date{font-size:11px;color:var(--text3)}
+.rev-stars{display:flex;gap:2px;margin-left:auto}
+.rev-star{color:var(--accent);font-size:12px}
+.rev-comment{font-size:13px;color:var(--text2);line-height:1.5}
+
+/* ===================== CHECKOUT ===================== */
+.checkout-grid{display:grid;grid-template-columns:1fr 380px;gap:24px;align-items:start}
+.steps-bar{display:flex;align-items:center;margin-bottom:28px}
+.step{display:flex;flex-direction:column;align-items:center;gap:6px;flex:1;position:relative}
+.step::after{content:'';position:absolute;top:16px;left:calc(50% + 18px);right:calc(-50% + 18px);height:2px;background:var(--border)}
+.step:last-child::after{display:none}
+.step-dot{
+  width:32px;height:32px;border-radius:50%;
+  background:var(--surface);border:2px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:800;color:var(--text3);z-index:1;
+}
+.step.done .step-dot{background:var(--green);border-color:var(--green);color:#fff}
+.step.active .step-dot{background:var(--accent);border-color:var(--accent);color:#fff;box-shadow:0 0 0 5px rgba(249,115,22,0.15)}
+.step-label{font-size:11px;font-weight:700;color:var(--text3)}
+.step.done .step-label,.step.active .step-label{color:var(--text1)}
+
+.checkout-card{background:var(--bg);border:1px solid var(--border);border-radius:var(--r-xl);padding:24px;margin-bottom:20px}
+.cc-title{font-size:13px;font-weight:800;color:var(--text3);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:18px}
+
+.time-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.time-slot{
+  padding:12px 8px;border-radius:var(--r-md);
+  border:1.5px solid var(--border);
+  text-align:center;cursor:pointer;
+  transition:var(--transition);
+  font-size:13px;font-weight:700;color:var(--text2);
+}
+.time-slot:hover:not(.full){border-color:var(--accent);color:var(--accent)}
+.time-slot.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+.time-slot.full{background:var(--surface);color:var(--text3);cursor:not-allowed;opacity:0.6}
+.ts-sub{font-size:10px;font-weight:500;margin-top:3px;opacity:0.7}
+
+.queue-box{background:var(--surface);border-radius:var(--r-lg);padding:28px;text-align:center}
+.queue-num{font-size:56px;font-weight:800;color:var(--accent);line-height:1}
+.queue-lbl{font-size:14px;color:var(--text2);margin-top:8px}
+.queue-eta{font-size:13px;font-weight:700;color:var(--green);margin-top:6px;display:flex;align-items:center;justify-content:center;gap:5px}
+
+.order-summary-item{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border)}
+.order-summary-item:last-child{border-bottom:none}
+.osi-left{display:flex;align-items:center;gap:10px}
+.osi-emoji{font-size:24px}
+.osi-name{font-size:13px;font-weight:700}
+.osi-qty{font-size:11px;color:var(--text3)}
+.osi-price{font-size:14px;font-weight:800;color:var(--accent)}
+
+.pay-btn{
+  width:100%;
+  background:linear-gradient(135deg,var(--accent),#fb923c);
+  color:#fff;border:none;
+  border-radius:var(--r-md);
+  padding:16px;
+  font-family:inherit;font-size:16px;font-weight:800;
+  cursor:pointer;transition:var(--transition);
+  box-shadow:0 4px 20px rgba(249,115,22,0.35);
+}
+.pay-btn:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(249,115,22,0.4)}
+
+/* ===================== DASHBOARD ===================== */
+.dash-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px}
+.metric-card{
+  background:var(--bg);
+  border:1px solid var(--border);
+  border-radius:var(--r-lg);
+  padding:20px;
+  box-shadow:var(--shadow-sm);
+}
+.metric-card.accent-card{background:var(--primary);border-color:var(--primary)}
+.metric-icon{font-size:24px;margin-bottom:12px}
+.metric-val{font-size:24px;font-weight:800;letter-spacing:-0.5px;margin-bottom:4px}
+.metric-card.accent-card .metric-val{color:#fff}
+.metric-lbl{font-size:12px;color:var(--text3);font-weight:600}
+.metric-card.accent-card .metric-lbl{color:rgba(255,255,255,0.5)}
+.metric-trend{display:inline-flex;align-items:center;gap:3px;font-size:11px;font-weight:700;padding:3px 8px;border-radius:20px;margin-top:8px}
+.trend-up{background:rgba(34,197,94,0.1);color:var(--green)}
+.trend-down{background:rgba(249,115,22,0.1);color:var(--accent)}
+
+.dash-row{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px}
+.dash-panel{background:var(--bg);border:1px solid var(--border);border-radius:var(--r-xl);padding:24px;box-shadow:var(--shadow-sm)}
+.dp-title{font-size:15px;font-weight:800;margin-bottom:20px}
+
+/* Bar Chart */
+.bar-chart{display:flex;align-items:flex-end;gap:6px;height:120px;padding-bottom:24px;position:relative}
+.bar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:0;position:relative}
+.bar{
+  width:100%;border-radius:6px 6px 0 0;
+  background:var(--surface2);
+  transition:height 0.5s ease;
+  position:relative;cursor:pointer;
+  min-height:4px;
+}
+.bar:hover{opacity:0.8}
+.bar.peak{background:linear-gradient(to top,var(--accent),var(--accent2))}
+.bar-lbl{position:absolute;bottom:-22px;font-size:9px;font-weight:700;color:var(--text3);white-space:nowrap}
+
+/* Top Menu */
+.top-menu-item{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border)}
+.top-menu-item:last-child{border-bottom:none}
+.rank{width:28px;height:28px;border-radius:var(--r-sm);background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:var(--text2);flex-shrink:0}
+.rank.r1{background:var(--accent);color:#fff}
+.rank.r2{background:var(--primary);color:#fff}
+.tm-name{flex:1;font-size:13px;font-weight:700}
+.tm-sold{font-size:11px;color:var(--text3)}
+.tm-rev{font-size:14px;font-weight:800;color:var(--green)}
+
+/* Insight Cards */
+.insight-card{
+  background:var(--surface);
+  border-radius:var(--r-md);
+  padding:16px;
+  border-left:3px solid var(--green);
+  margin-bottom:12px;
+}
+.insight-card.orange{border-left-color:var(--accent)}
+.insight-title{font-size:13px;font-weight:800;margin-bottom:6px}
+.insight-text{font-size:12px;color:var(--text2);line-height:1.6}
+
+/* ===================== AI CHAT ===================== */
+.chat-layout{display:grid;grid-template-columns:1fr 320px;gap:24px;height:calc(100vh - 160px);align-items:start}
+.chat-main{
+  background:var(--bg);border:1px solid var(--border);
+  border-radius:var(--r-xl);
+  display:flex;flex-direction:column;
+  height:calc(100vh - 160px);
+  overflow:hidden;
+}
+.chat-header{
+  padding:20px 24px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:14px;flex-shrink:0;
+}
+.ai-ava{
+  width:44px;height:44px;border-radius:var(--r-md);
+  background:linear-gradient(135deg,var(--accent),#fb923c);
+  display:flex;align-items:center;justify-content:center;
+  font-size:22px;
+  box-shadow:0 4px 14px rgba(249,115,22,0.35);
+}
+.ai-name{font-size:15px;font-weight:800}
+.ai-status{font-size:12px;color:var(--text3);margin-top:2px;display:flex;align-items:center;gap:5px}
+.status-dot{width:7px;height:7px;background:var(--green);border-radius:50%;animation:blink 2s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.4}}
+
+.chat-messages{flex:1;overflow-y:auto;padding:20px 24px;display:flex;flex-direction:column;gap:16px}
+.chat-messages::-webkit-scrollbar{width:4px}
+.chat-messages::-webkit-scrollbar-track{background:transparent}
+.chat-messages::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+
+.msg{display:flex;flex-direction:column;gap:4px;max-width:80%}
+.msg.ai{align-self:flex-start}
+.msg.user{align-self:flex-end}
+.msg-bubble{padding:12px 16px;border-radius:16px;font-size:14px;line-height:1.6}
+.msg.ai .msg-bubble{background:var(--surface);border-radius:4px 16px 16px 16px;color:var(--text1)}
+.msg.user .msg-bubble{background:linear-gradient(135deg,var(--accent),#fb923c);color:#fff;border-radius:16px 16px 4px 16px}
+.msg-time{font-size:10px;color:var(--text3)}
+.msg.user .msg-time{text-align:right}
+.chip-row{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.ai-chip{
+  background:rgba(249,115,22,0.1);
+  color:var(--accent);
+  border:1px solid rgba(249,115,22,0.2);
+  font-size:12px;font-weight:700;
+  padding:6px 12px;border-radius:30px;
+  cursor:pointer;transition:var(--transition);
+}
+.ai-chip:hover{background:rgba(249,115,22,0.18)}
+
+.chat-input-wrap{
+  padding:16px 24px;border-top:1px solid var(--border);
+  display:flex;gap:10px;flex-shrink:0;
+}
+.chat-input{
+  flex:1;
+  border:1.5px solid var(--border);
+  border-radius:var(--r-md);
+  padding:12px 16px;
+  font-family:inherit;font-size:14px;
+  outline:none;transition:var(--transition);
+  resize:none;
+  background:var(--surface);
+}
+.chat-input:focus{border-color:var(--accent);background:#fff;box-shadow:0 0 0 3px rgba(249,115,22,0.08)}
+.send-btn{
+  width:44px;height:44px;
+  background:linear-gradient(135deg,var(--accent),#fb923c);
+  border:none;border-radius:var(--r-md);
+  color:#fff;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:var(--transition);
+  box-shadow:0 4px 12px rgba(249,115,22,0.3);
+  flex-shrink:0;
+}
+.send-btn:hover{transform:scale(1.05)}
+
+.chat-sidebar{
+  background:var(--bg);border:1px solid var(--border);
+  border-radius:var(--r-xl);padding:24px;
+  box-shadow:var(--shadow-sm);
+}
+.cs-title{font-size:14px;font-weight:800;margin-bottom:16px}
+.suggestion-item{
+  display:flex;align-items:flex-start;gap:10px;
+  padding:12px;border-radius:var(--r-md);
+  background:var(--surface);
+  cursor:pointer;margin-bottom:8px;
+  transition:var(--transition);border:1px solid transparent;
+}
+.suggestion-item:hover{border-color:var(--accent);background:#fff}
+.si-icon{font-size:20px;flex-shrink:0}
+.si-text{font-size:12px;font-weight:600;color:var(--text2);line-height:1.4}
+
+/* ===================== VIDEO FEED ===================== */
+.reels-layout{display:grid;grid-template-columns:1fr 300px;gap:24px;align-items:start}
+.reels-feed{
+  background:var(--primary);
+  border-radius:var(--r-xl);
+  overflow:hidden;
+  height:calc(100vh - 160px);
+  overflow-y:auto;
+  scroll-snap-type:y mandatory;
+}
+.reels-feed::-webkit-scrollbar{width:0}
+.reel{
+  height:calc(100vh - 160px);
+  scroll-snap-align:start;
+  position:relative;
+  display:flex;align-items:center;justify-content:center;
+  overflow:hidden;
+}
+.reel-bg-emoji{
+  position:absolute;font-size:200px;
+  opacity:0.15;filter:blur(2px);
+  animation:float 6s ease-in-out infinite;
+}
+@keyframes float{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-15px) scale(1.05)}}
+.reel-gradient{position:absolute;inset:0;background:linear-gradient(to top,rgba(15,23,42,0.95) 0%,rgba(15,23,42,0.2) 50%,rgba(15,23,42,0.4) 100%)}
+.reel-content{position:absolute;bottom:40px;left:24px;right:80px;z-index:2}
+.reel-umkm-row{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.reel-umkm-av{width:36px;height:36px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:16px;border:2px solid rgba(255,255,255,0.3)}
+.reel-umkm-name{color:#fff;font-size:14px;font-weight:700}
+.reel-follow-btn{background:var(--accent);color:#fff;border:none;font-family:inherit;font-size:11px;font-weight:800;padding:5px 12px;border-radius:20px;cursor:pointer;margin-left:auto;transition:var(--transition)}
+.reel-follow-btn:hover{background:#ea6c10}
+.reel-food-name{color:#fff;font-size:22px;font-weight:800;margin-bottom:8px;line-height:1.2}
+.reel-desc{color:rgba(255,255,255,0.7);font-size:13px;line-height:1.5;margin-bottom:12px}
+.reel-price-row{display:flex;align-items:center;gap:16px;margin-bottom:20px}
+.reel-price{color:var(--accent);font-size:28px;font-weight:800}
+.reel-likes{color:rgba(255,255,255,0.6);font-size:13px}
+.reel-order-btn{
+  background:var(--accent);color:#fff;
+  border:none;font-family:inherit;
+  font-size:14px;font-weight:800;
+  padding:14px 28px;border-radius:var(--r-md);
+  cursor:pointer;transition:var(--transition);
+  box-shadow:0 4px 16px rgba(249,115,22,0.4);
+}
+.reel-order-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(249,115,22,0.5)}
+.reel-actions{position:absolute;bottom:50px;right:20px;z-index:2;display:flex;flex-direction:column;gap:20px}
+.reel-action{display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer}
+.ra-icon{
+  width:46px;height:46px;background:rgba(255,255,255,0.15);
+  border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:20px;backdrop-filter:blur(8px);
+  transition:var(--transition);border:1px solid rgba(255,255,255,0.1);
+}
+.ra-icon:hover{background:rgba(255,255,255,0.25);transform:scale(1.1)}
+.ra-lbl{color:rgba(255,255,255,0.8);font-size:10px;font-weight:700}
+.reel-progress{display:flex;gap:3px;position:absolute;top:16px;left:16px;right:16px;z-index:2}
+.rp-bar{flex:1;height:2px;background:rgba(255,255,255,0.3);border-radius:1px}
+.rp-bar.active{background:#fff}
+
+.reels-sidebar{
+  background:var(--bg);border:1px solid var(--border);
+  border-radius:var(--r-xl);padding:24px;
+  box-shadow:var(--shadow-sm);
+}
+.rs-title{font-size:14px;font-weight:800;margin-bottom:16px}
+.rs-item{
+  display:flex;gap:12px;padding:12px 0;
+  border-bottom:1px solid var(--border);
+  cursor:pointer;transition:var(--transition);
+}
+.rs-item:last-child{border-bottom:none}
+.rs-item:hover .rs-name{color:var(--accent)}
+.rs-thumb{width:60px;height:60px;border-radius:var(--r-sm);background:var(--surface);display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0;border:1px solid var(--border)}
+.rs-name{font-size:13px;font-weight:700;transition:var(--transition)}
+.rs-price{font-size:14px;font-weight:800;color:var(--accent);margin-top:4px}
+.rs-views{font-size:11px;color:var(--text3);margin-top:2px}
+
+/* ===================== TOAST ===================== */
+.toast-wrap{position:fixed;bottom:28px;right:28px;z-index:9999;display:flex;flex-direction:column;gap:8px}
+.toast{
+  background:var(--primary);color:#fff;
+  padding:14px 20px;border-radius:var(--r-md);
+  font-size:13px;font-weight:700;
+  box-shadow:var(--shadow-xl);
+  display:flex;align-items:center;gap:10px;
+  animation:slideIn 0.3s ease;
+  max-width:320px;
+}
+@keyframes slideIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
+.toast.success{border-left:3px solid var(--green)}
+.toast.error{border-left:3px solid #ef4444}
+.toast.info{border-left:3px solid var(--accent)}
+
+/* ===================== EMPTY STATES ===================== */
+.empty-state{
+  text-align:center;padding:60px 20px;
+  color:var(--text3);
+}
+.empty-icon{font-size:48px;margin-bottom:12px}
+.empty-title{font-size:16px;font-weight:700;color:var(--text2);margin-bottom:6px}
+.empty-text{font-size:13px;line-height:1.5}
+
+/* ===================== MOBILE ===================== */
+.mobile-nav{display:none}
+@media(max-width:900px){
+  .sidebar{transform:translateX(-100%)}
+  .sidebar.open{transform:translateX(0)}
+  .main{margin-left:0}
+  .topbar{padding:0 16px}
+  .page{padding:16px}
+  .detail-content{grid-template-columns:1fr}
+  .checkout-grid{grid-template-columns:1fr}
+  .dash-grid{grid-template-columns:1fr 1fr}
+  .dash-row{grid-template-columns:1fr}
+  .chat-layout{grid-template-columns:1fr}
+  .chat-sidebar{display:none}
+  .reels-layout{grid-template-columns:1fr}
+  .reels-sidebar{display:none}
+  .food-grid{grid-template-columns:1fr 1fr}
+  .umkm-grid{grid-template-columns:1fr}
+  .hero{padding:24px}
+  .hero-stats{gap:16px}
+  .time-grid{grid-template-columns:repeat(3,1fr)}
+  .mobile-nav{
+    display:flex;
+    position:fixed;bottom:0;left:0;right:0;
+    background:var(--glass);backdrop-filter:blur(20px);
+    border-top:1px solid var(--border);
+    padding:10px 0 20px;z-index:150;
+  }
+  .mnav-inner{display:flex;justify-content:space-around;width:100%}
+  .mnav-item{display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:4px 10px;border-radius:var(--r-sm)}
+  .mnav-icon{font-size:20px}
+  .mnav-lbl{font-size:9px;font-weight:700;color:var(--text3)}
+  .mnav-item.active .mnav-lbl{color:var(--accent)}
+  .main{padding-bottom:80px}
+}
+@media(max-width:480px){
+  .dash-grid{grid-template-columns:1fr 1fr}
+  .food-grid{grid-template-columns:1fr 1fr}
+  .detail-stats-row{gap:12px}
+}
+
+/* ===================== MISC UTILITIES ===================== */
+.divider{height:1px;background:var(--border);margin:24px 0}
+.mb-0{margin-bottom:0}
+.mt-16{margin-top:16px}
+.mt-24{margin-top:24px}
+.skeleton{background:linear-gradient(90deg,var(--surface) 25%,var(--surface2) 50%,var(--surface) 75%);background-size:200% 100%;animation:shimmer 1.4s infinite}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.skel-block{border-radius:var(--r-sm);height:20px;width:100%}
+</style>
+</head>
+<body>
+
+<!-- Loading -->
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="spinner"></div>
+  <div class="loading-text">Menyiapkan IPB Makan...</div>
+</div>
+
+<!-- Toast Container -->
+<div class="toast-wrap" id="toastWrap"></div>
+
+<div class="app">
+
+<!-- ==================== SIDEBAR ==================== -->
+<nav class="sidebar" id="sidebar">
+  <div class="sidebar-logo" onclick="navigate('home')">
+    <div class="logo-mark">🍛</div>
+    <div>
+      <div class="logo-text">IPB Makan</div>
+      <div class="logo-sub">Super App Pangan Kampus</div>
+    </div>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-label">Mahasiswa</div>
+
+    <div class="nav-item active" id="nav-home" onclick="navigate('home')">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      Beranda
+    </div>
+    <div class="nav-item" id="nav-explore" onclick="navigate('explore')">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+      Jelajahi Warung
+    </div>
+    <div class="nav-item" id="nav-reels" onclick="navigate('reels')">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+      Video Feed
+    </div>
+    <div class="nav-item" id="nav-checkout" onclick="navigate('checkout')">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+      Pre-Order
+      <span class="nav-badge" id="cartBadge" style="display:none">0</span>
+    </div>
+
+    <div class="nav-label">UMKM</div>
+
+    <div class="nav-item" id="nav-dashboard" onclick="navigate('dashboard')">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      Dashboard
+    </div>
+    <div class="nav-item" id="nav-ai" onclick="navigate('ai')">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      AI Asisten
+    </div>
+  </div>
+
+  <div class="sidebar-bottom">
+    <div class="user-card">
+      <div class="user-ava">M</div>
+      <div>
+        <div class="user-name">Mahasiswa IPB</div>
+        <div class="user-role">⭐ Gold · 1.250 pts</div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="main">
+
+<!-- TOPBAR -->
+<header class="topbar">
+  <button onclick="document.getElementById('sidebar').classList.toggle('open')" style="display:none;background:none;border:none;cursor:pointer;padding:4px" id="menuBtn">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+  </button>
+  <div class="topbar-search">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+    <input type="text" placeholder="Cari makanan, warung, menu..." id="globalSearch" oninput="handleSearch(this.value)">
+  </div>
+  <div class="topbar-actions">
+    <div class="icon-btn" onclick="navigate('checkout')" title="Keranjang">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+      <div class="notif-dot" id="cartDot" style="display:none"></div>
+    </div>
+    <div class="icon-btn" title="Notifikasi">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+      <div class="notif-dot"></div>
+    </div>
+  </div>
+</header>
+
+<!-- ==================== HOME PAGE ==================== -->
+<div class="page active" id="page-home">
+
+  <!-- Hero -->
+  <div class="hero">
+    <div class="hero-inner">
+      <div class="hero-top">
+        <div>
+          <div class="hero-greet">Selamat datang di IPB Makan 👋</div>
+          <div class="hero-title">Makan enak,<br>tanpa antre panjang.</div>
+        </div>
+        <div class="hero-badge">
+          <span>🔥</span> 47 Warung Aktif
+        </div>
+      </div>
+      <div class="hero-stats" id="heroStats">
+        <div class="ds"><div class="h-stat-val" id="statOrders">—</div><div class="h-stat-lbl">Order Hari Ini</div></div>
+        <div class="hero-divider"></div>
+        <div class="ds"><div class="h-stat-val" id="statUmkm">—</div><div class="h-stat-lbl">Warung UMKM</div></div>
+        <div class="hero-divider"></div>
+        <div class="ds"><div class="h-stat-val" id="statPrice">Rp 8k</div><div class="h-stat-lbl">Mulai dari</div></div>
+        <div class="hero-divider"></div>
+        <div class="ds"><div class="h-stat-val" id="statVideos">—</div><div class="h-stat-lbl">Video Feed</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Categories -->
+  <div class="section-head">
+    <div><div class="section-title">Kategori</div></div>
+  </div>
+  <div class="cat-scroll" id="catScroll">
+    <div class="cat-chip active" onclick="filterByCategory(this,'all')"><span class="cat-emoji">🍽️</span>Semua</div>
+    <div class="cat-chip" onclick="filterByCategory(this,'Nasi & Lauk')"><span class="cat-emoji">🍚</span>Nasi & Lauk</div>
+    <div class="cat-chip" onclick="filterByCategory(this,'Mie & Bakso')"><span class="cat-emoji">🍜</span>Mie & Bakso</div>
+    <div class="cat-chip" onclick="filterByCategory(this,'Sayur & Sehat')"><span class="cat-emoji">🥗</span>Sayur & Sehat</div>
+    <div class="cat-chip" onclick="filterByCategory(this,'Padang')"><span class="cat-emoji">🍛</span>Padang</div>
+    <div class="cat-chip" onclick="filterByCategory(this,'Minuman & Kopi')"><span class="cat-emoji">☕</span>Minuman</div>
+    <div class="cat-chip" onclick="filterByCategory(this,'Nasi Goreng')"><span class="cat-emoji">🍳</span>Nasi Goreng</div>
+  </div>
+
+  <!-- Trending -->
+  <div class="section-head">
+    <div>
+      <div class="section-title">🔥 Trending Sekarang</div>
+      <div class="section-sub">Paling banyak dipesan hari ini</div>
+    </div>
+    <button class="see-all" onclick="navigate('explore')">Lihat semua →</button>
+  </div>
+  <div class="food-grid" id="trendingGrid">
+    <!-- Loaded from Supabase -->
+    <div class="food-card"><div class="food-img skeleton" style="height:140px"></div><div class="food-body" style="padding:14px"><div class="skel-block skeleton mb-0"></div></div></div>
+    <div class="food-card"><div class="food-img skeleton" style="height:140px"></div><div class="food-body" style="padding:14px"><div class="skel-block skeleton mb-0"></div></div></div>
+    <div class="food-card"><div class="food-img skeleton" style="height:140px"></div><div class="food-body" style="padding:14px"><div class="skel-block skeleton mb-0"></div></div></div>
+    <div class="food-card"><div class="food-img skeleton" style="height:140px"></div><div class="food-body" style="padding:14px"><div class="skel-block skeleton mb-0"></div></div></div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- Hemat Section -->
+  <div class="section-head">
+    <div>
+      <div class="section-title">💰 Hemat ala Mahasiswa</div>
+      <div class="section-sub">Menu di bawah Rp 12.000</div>
+    </div>
+  </div>
+  <div class="food-grid" id="cheapGrid">
+    <div class="food-card"><div class="food-img skeleton" style="height:140px"></div><div class="food-body" style="padding:14px"><div class="skel-block skeleton mb-0"></div></div></div>
+    <div class="food-card"><div class="food-img skeleton" style="height:140px"></div><div class="food-body" style="padding:14px"><div class="skel-block skeleton mb-0"></div></div></div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- Video Teaser -->
+  <div class="section-head">
+    <div>
+      <div class="section-title">🎬 Video Feed UMKM</div>
+      <div class="section-sub">Konten terbaru dari warung favoritmu</div>
+    </div>
+    <button class="see-all" onclick="navigate('reels')">Buka Feed →</button>
+  </div>
+  <div class="food-grid" id="videoTeaser" style="grid-template-columns:repeat(auto-fill,minmax(180px,1fr))">
+    <!-- Loaded -->
+  </div>
+
+</div>
+
+<!-- ==================== EXPLORE PAGE ==================== -->
+<div class="page" id="page-explore">
+  <div class="section-head mb-0">
+    <div><div class="section-title">Jelajahi Warung UMKM</div><div class="section-sub" id="exploreCount">Memuat...</div></div>
+  </div>
+  <div class="filter-bar mt-16">
+    <div class="filter-pill active" onclick="setFilter(this,'all')">🔥 Semua</div>
+    <div class="filter-pill" onclick="setFilter(this,'rating')">⭐ Rating Tertinggi</div>
+    <div class="filter-pill" onclick="setFilter(this,'price')">💰 Termurah</div>
+    <div class="filter-pill" onclick="setFilter(this,'distance')">📍 Terdekat</div>
+    <div class="filter-pill" onclick="setFilter(this,'open')">✅ Buka Sekarang</div>
+  </div>
+  <div class="umkm-grid" id="umkmGrid">
+    <!-- Loaded from Supabase -->
+  </div>
+</div>
+
+<!-- ==================== DETAIL PAGE ==================== -->
+<div class="page" id="page-detail">
+  <div class="detail-hero" id="detailHero">
+    <!-- Loaded dynamically -->
+  </div>
+  <div class="detail-content" id="detailContent">
+    <!-- Loaded dynamically -->
+  </div>
+</div>
+
+<!-- ==================== CHECKOUT PAGE ==================== -->
+<div class="page" id="page-checkout">
+  <div class="section-title" style="margin-bottom:24px">Pre-Order</div>
+  <div class="steps-bar">
+    <div class="step done"><div class="step-dot">✓</div><div class="step-label">Pilih Menu</div></div>
+    <div class="step active"><div class="step-dot">2</div><div class="step-label">Waktu Ambil</div></div>
+    <div class="step"><div class="step-dot">3</div><div class="step-label">Konfirmasi</div></div>
+    <div class="step"><div class="step-dot">4</div><div class="step-label">Antrean</div></div>
+  </div>
+  <div class="checkout-grid">
+    <div>
+      <!-- Queue -->
+      <div class="checkout-card">
+        <div class="cc-title">Nomor Antrean Anda</div>
+        <div class="queue-box">
+          <div class="queue-num">#A47</div>
+          <div class="queue-lbl">Estimasi waktu persiapan</div>
+          <div class="queue-eta"><span>✅</span> 15 menit · 6 orang sebelum kamu</div>
+        </div>
+      </div>
+      <!-- Time Picker -->
+      <div class="checkout-card">
+        <div class="cc-title">Pilih Waktu Ambil</div>
+        <div class="time-grid">
+          <div class="time-slot" onclick="pickTime(this)">11:30<div class="ts-sub">2 slot</div></div>
+          <div class="time-slot active" onclick="pickTime(this)">11:45<div class="ts-sub">Tersedia</div></div>
+          <div class="time-slot" onclick="pickTime(this)">12:00<div class="ts-sub">4 slot</div></div>
+          <div class="time-slot full">12:15<div class="ts-sub">Penuh</div></div>
+          <div class="time-slot" onclick="pickTime(this)">12:30<div class="ts-sub">Tersedia</div></div>
+          <div class="time-slot" onclick="pickTime(this)">12:45<div class="ts-sub">Tersedia</div></div>
+          <div class="time-slot" onclick="pickTime(this)">13:00<div class="ts-sub">3 slot</div></div>
+          <div class="time-slot" onclick="pickTime(this)">13:30<div class="ts-sub">Tersedia</div></div>
+        </div>
+      </div>
+      <!-- Order Summary -->
+      <div class="checkout-card">
+        <div class="cc-title">Ringkasan Pesanan</div>
+        <div id="checkoutItems">
+          <div class="empty-state">
+            <div class="empty-icon">🛒</div>
+            <div class="empty-title">Keranjang masih kosong</div>
+            <div class="empty-text">Pilih menu dari halaman warung dulu ya!</div>
+          </div>
+        </div>
+        <div id="checkoutTotal" style="margin-top:16px;display:none">
+          <div class="op-row"><span>Subtotal</span><span id="subtotalVal">—</span></div>
+          <div class="op-row discount"><span>Diskon Pre-Order (10%)</span><span id="discountVal">—</span></div>
+          <div class="op-row final"><span>Total</span><span id="totalVal">—</span></div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="checkout-card" style="position:sticky;top:80px">
+        <div class="cc-title">Konfirmasi Pembayaran</div>
+        <div id="confirmItems" style="margin-bottom:16px"></div>
+        <button class="pay-btn" onclick="confirmOrder()" id="payBtn" disabled>
+          Konfirmasi & Bayar
+        </button>
+        <div style="text-align:center;margin-top:12px;font-size:12px;color:var(--text3)">
+          🔒 Pembayaran aman · Poin akan ditambahkan setelah transaksi
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== REELS PAGE ==================== -->
+<div class="page" id="page-reels">
+  <div class="section-head" style="margin-bottom:20px">
+    <div><div class="section-title">🎬 Video Feed</div><div class="section-sub">Konten terbaru UMKM kampus</div></div>
+  </div>
+  <div class="reels-layout">
+    <div class="reels-feed" id="reelsFeed">
+      <!-- Loaded dynamically -->
+    </div>
+    <div class="reels-sidebar">
+      <div class="rs-title">Video Lainnya</div>
+      <div id="reelsSidebar"><!-- Loaded --></div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== DASHBOARD PAGE ==================== -->
+<div class="page" id="page-dashboard">
+  <div class="section-head mb-0">
+    <div>
+      <div class="section-title">Dashboard UMKM</div>
+      <div class="section-sub">Warung Bu Sari · Hari Ini</div>
+    </div>
+    <button class="see-all" style="background:var(--surface);border:1px solid var(--border);color:var(--text2);border-radius:var(--r-sm);padding:8px 16px">Minggu ini ▾</button>
+  </div>
+
+  <div class="dash-grid mt-24" id="dashMetrics">
+    <div class="metric-card accent-card">
+      <div class="metric-icon">💰</div>
+      <div class="metric-val" id="mRevenue">Rp 847k</div>
+      <div class="metric-lbl">Pendapatan Hari Ini</div>
+      <div class="metric-trend trend-up">↑ 23% vs kemarin</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-icon">📦</div>
+      <div class="metric-val" id="mOrders">67</div>
+      <div class="metric-lbl">Total Pesanan</div>
+      <div class="metric-trend trend-up">↑ 18%</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-icon">⭐</div>
+      <div class="metric-val" id="mRating">4.9</div>
+      <div class="metric-lbl">Rating Rata-rata</div>
+      <div class="metric-trend trend-up">↑ Stabil</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-icon">👥</div>
+      <div class="metric-val" id="mReviews">—</div>
+      <div class="metric-lbl">Total Ulasan</div>
+      <div class="metric-trend trend-up">↑ 5 baru</div>
+    </div>
+  </div>
+
+  <div class="dash-row">
+    <!-- Chart -->
+    <div class="dash-panel">
+      <div class="dp-title">📊 Jam Sibuk Hari Ini</div>
+      <div class="bar-chart" id="busyChart">
+        <!-- Generated -->
+      </div>
+      <div style="display:flex;gap:16px;margin-top:28px;font-size:11px;color:var(--text3)">
+        <div style="display:flex;align-items:center;gap:5px"><div style="width:12px;height:12px;background:var(--accent);border-radius:3px"></div>Jam puncak</div>
+        <div style="display:flex;align-items:center;gap:5px"><div style="width:12px;height:12px;background:var(--surface2);border-radius:3px;border:1px solid var(--border)"></div>Normal</div>
+      </div>
+    </div>
+    <!-- Top Menu -->
+    <div class="dash-panel">
+      <div class="dp-title">🏆 Menu Terlaris</div>
+      <div id="topMenu"><!-- Loaded --></div>
+    </div>
+  </div>
+
+  <!-- Insights -->
+  <div class="dash-panel" style="margin-bottom:20px">
+    <div class="dp-title">💡 Insight & Rekomendasi AI</div>
+    <div class="insight-card">
+      <div class="insight-title">📈 Peluang Peningkatan Penjualan</div>
+      <div class="insight-text">Jam 12.00–13.00 adalah jam puncakmu. Pertimbangkan menambah stok ayam bakar 20% untuk besok. Pre-order promotion bisa kurangi antrean hingga 40%!</div>
+    </div>
+    <div class="insight-card orange">
+      <div class="insight-title">🍹 Tambah Kategori Minuman</div>
+      <div class="insight-text">78% pelangganmu memesan tanpa minuman. Tambahkan minuman spesial ke menu — potensi tambahan Rp 150k–200k per hari!</div>
+    </div>
+    <div class="insight-card" style="border-left-color:var(--blue)">
+      <div class="insight-title">📱 Aktifkan Video Feed</div>
+      <div class="insight-text">Warung dengan video aktif mendapatkan 3x lebih banyak kunjungan profil. Upload video memasak hari ini untuk meningkatkan visibilitas!</div>
+    </div>
+  </div>
+
+  <!-- Reviews from DB -->
+  <div class="dash-panel" style="margin-bottom:20px">
+    <div class="dp-title">💬 Ulasan Terbaru</div>
+    <div id="dashReviews"><!-- Loaded --></div>
+  </div>
+</div>
+
+<!-- ==================== AI PAGE ==================== -->
+<div class="page" id="page-ai">
+  <div class="chat-layout">
+    <div class="chat-main">
+      <div class="chat-header">
+        <div class="ai-ava">🤖</div>
+        <div>
+          <div class="ai-name">IPB Makan AI Assistant</div>
+          <div class="ai-status"><div class="status-dot"></div>Online · Siap membantu bisnis UMKM-mu</div>
+        </div>
+      </div>
+      <div class="chat-messages" id="chatMessages">
+        <div class="msg ai">
+          <div class="msg-bubble">Halo! 👋 Saya adalah AI asisten khusus untuk membantu bisnis warung UMKM di IPB Makan.<br><br>Saya bisa bantu kamu dengan:<br>• 💰 Analisis dan saran penetapan harga<br>• 🍽️ Ide menu baru berdasarkan tren<br>• 📣 Strategi promosi dan marketing<br>• 📊 Membaca dan memahami data penjualan<br><br>Mau tanya apa hari ini?</div>
+          <div class="msg-time">Sekarang</div>
+          <div class="chip-row">
+            <div class="ai-chip" onclick="askAI(this.textContent)">💰 Saran harga optimal</div>
+            <div class="ai-chip" onclick="askAI(this.textContent)">🍽️ Ide menu baru</div>
+            <div class="ai-chip" onclick="askAI(this.textContent)">📣 Strategi promosi</div>
+            <div class="ai-chip" onclick="askAI(this.textContent)">⏰ Cara atasi jam sepi</div>
+          </div>
+        </div>
+      </div>
+      <div class="chat-input-wrap">
+        <input class="chat-input" id="chatInput" type="text" placeholder="Ketik pertanyaan tentang bisnis warungmu..." onkeypress="if(event.key==='Enter')sendChat()">
+        <button class="send-btn" onclick="sendChat()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        </button>
+      </div>
+    </div>
+    <div class="chat-sidebar">
+      <div class="cs-title">Pertanyaan Populer</div>
+      <div class="suggestion-item" onclick="askAI('Bagaimana cara meningkatkan penjualan di jam sepi?')"><div class="si-icon">📈</div><div class="si-text">Cara meningkatkan penjualan di jam sepi?</div></div>
+      <div class="suggestion-item" onclick="askAI('Harga berapa yang ideal untuk menu ayam bakar?')"><div class="si-icon">💰</div><div class="si-text">Harga ideal untuk menu ayam bakar?</div></div>
+      <div class="suggestion-item" onclick="askAI('Menu apa yang lagi trending di kampus?')"><div class="si-icon">🔥</div><div class="si-text">Menu apa yang lagi trending di kampus?</div></div>
+      <div class="suggestion-item" onclick="askAI('Bagaimana strategi promo untuk mahasiswa?')"><div class="si-icon">📣</div><div class="si-text">Strategi promo untuk mahasiswa?</div></div>
+      <div class="suggestion-item" onclick="askAI('Kapan waktu terbaik untuk buka warung?')"><div class="si-icon">⏰</div><div class="si-text">Waktu terbaik untuk buka warung?</div></div>
+      <div class="suggestion-item" onclick="askAI('Tips membuat konten video untuk promosi?')"><div class="si-icon">🎬</div><div class="si-text">Tips konten video untuk promosi?</div></div>
+
+      <div style="margin-top:20px">
+        <div class="cs-title">Data Warung Kamu</div>
+        <div style="background:var(--surface);border-radius:var(--r-md);padding:14px;font-size:12px">
+          <div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="color:var(--text3)">Warung</span><span style="font-weight:700">Warung Bu Sari</span></div>
+          <div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="color:var(--text3)">Rating</span><span style="font-weight:700;color:var(--accent)">⭐ 4.9</span></div>
+          <div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="color:var(--text3)">Menu aktif</span><span style="font-weight:700" id="aiMenuCount">—</span></div>
+          <div style="display:flex;justify-content:space-between"><span style="color:var(--text3)">Total ulasan</span><span style="font-weight:700" id="aiReviewCount">—</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /main -->
+
+<!-- Mobile Nav -->
+<nav class="mobile-nav">
+  <div class="mnav-inner">
+    <div class="mnav-item active" id="mnav-home" onclick="navigate('home')"><div class="mnav-icon">🏠</div><div class="mnav-lbl">Home</div></div>
+    <div class="mnav-item" id="mnav-explore" onclick="navigate('explore')"><div class="mnav-icon">🔍</div><div class="mnav-lbl">Jelajahi</div></div>
+    <div class="mnav-item" id="mnav-reels" onclick="navigate('reels')"><div class="mnav-icon">🎬</div><div class="mnav-lbl">Feed</div></div>
+    <div class="mnav-item" id="mnav-checkout" onclick="navigate('checkout')"><div class="mnav-icon">🛒</div><div class="mnav-lbl">Order</div></div>
+    <div class="mnav-item" id="mnav-dashboard" onclick="navigate('dashboard')"><div class="mnav-icon">📊</div><div class="mnav-lbl">Dashboard</div></div>
+  </div>
+</nav>
+
+</div><!-- /app -->
+
+<script>
+// ===================== SUPABASE INIT =====================
+const { createClient } = supabase;
+const sb = createClient(
+  'https://ahesoewawdtcgriergft.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFoZXNvZXdhd2R0Y2dyaWVyZ2Z0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ0Mjk4MTksImV4cCI6MjA5MDAwNTgxOX0.bAr_Y-BGTDZuNdQGgiUiYduNlSSVQdtprA8wyzmnqJg'
+);
+
+// ===================== STATE =====================
+let allUmkm = [];
+let allMenu = [];
+let allVideos = [];
+let allReviews = [];
+let cart = {}; // { menuId: { name, price, qty, umkmName } }
+let currentUmkmId = null;
+let currentFilter = 'all';
+
+// Emoji map
+const catEmoji = {
+  'Nasi & Lauk':'🍗','Mie & Bakso':'🍜','Sayur & Sehat':'🥗',
+  'Padang':'🍛','Minuman & Kopi':'☕','Nasi Goreng':'🍳','Umum':'🍽️'
+};
+const menuEmoji = {
+  'Makanan':['🍗','🍚','🥗','🍛','🍜','🫔','🥘','🍱'],
+  'Minuman':['🥤','☕','🧋','🍵'],
+  'Paket':['🍱','🎁'],
+  'Tambahan':['🫙','🌶️']
+};
+function getMenuEmoji(cat, i){
+  const arr = menuEmoji[cat] || menuEmoji['Makanan'];
+  return arr[i % arr.length];
+}
+
+// ===================== NAVIGATION =====================
+const pages = ['home','explore','detail','checkout','reels','dashboard','ai'];
+function navigate(page){
+  pages.forEach(p => {
+    document.getElementById('page-'+p)?.classList.remove('active');
+    document.getElementById('nav-'+p)?.classList.remove('active');
+    document.getElementById('mnav-'+p)?.classList.remove('active');
+  });
+  document.getElementById('page-'+page)?.classList.add('active');
+  document.getElementById('nav-'+page)?.classList.add('active');
+  document.getElementById('mnav-'+page)?.classList.add('active');
+  window.scrollTo(0,0);
+  if(page==='explore' && allUmkm.length) renderUmkm(allUmkm);
+  if(page==='dashboard') loadDashboard();
+  if(page==='reels') renderReels();
+  if(page==='checkout') renderCheckout();
+}
+
+// ===================== TOAST =====================
+function toast(msg, type='info'){
+  const wrap = document.getElementById('toastWrap');
+  const t = document.createElement('div');
+  t.className = `toast ${type}`;
+  t.innerHTML = (type==='success'?'✅':type==='error'?'❌':'💡') + ' ' + msg;
+  wrap.appendChild(t);
+  setTimeout(()=>t.remove(), 3500);
+}
+
+// ===================== LOAD DATA =====================
+async function loadAll(){
+  try {
+    // Load UMKM
+    const { data: umkm } = await sb.from('umkm').select('*').order('umkm_rating', { ascending: false });
+    allUmkm = umkm || [];
+
+    // Load Menu
+    const { data: menu } = await sb.from('menu').select('*').eq('is_available', true).order('total_sold', { ascending: false });
+    allMenu = menu || [];
+
+    // Load Videos
+    const { data: vids } = await sb.from('videos').select('*').order('likes', { ascending: false });
+    allVideos = vids || [];
+
+    // Load Reviews
+    const { data: revs } = await sb.from('reviews').select('*').order('created_at', { ascending: false });
+    allReviews = revs || [];
+
+    // Update hero stats
+    document.getElementById('statOrders').textContent = '2.4k';
+    document.getElementById('statUmkm').textContent = allUmkm.length;
+    document.getElementById('statVideos').textContent = allVideos.length;
+
+    renderTrending();
+    renderCheap();
+    renderVideoTeaser();
+    renderUmkm(allUmkm);
+    renderBusyChart();
+    renderTopMenu();
+    renderDashReviews();
+
+    // AI sidebar stats
+    const umkm1Menu = allMenu.filter(m => m.umkm_id === 'a1b2c3d4-0001-0001-0001-000000000001');
+    const umkm1Reviews = allReviews.filter(r => r.umkm_id === 'a1b2c3d4-0001-0001-0001-000000000001');
+    document.getElementById('aiMenuCount')?.textContent && (document.getElementById('aiMenuCount').textContent = umkm1Menu.length + ' menu');
+    document.getElementById('aiReviewCount')?.textContent && (document.getElementById('aiReviewCount').textContent = umkm1Reviews.length + ' ulasan');
+
+  } catch(e){
+    console.error(e);
+    toast('Gagal memuat data. Pastikan koneksi internet stabil.', 'error');
+  }
+  document.getElementById('loadingOverlay').classList.add('hidden');
+}
+
+// ===================== RENDER: FOOD CARD =====================
+function makeFoodCard(item, umkmName, isBest, isCheap, clickFn) {
+  const emo = getMenuEmoji(item.category, Math.random()*8|0);
+  const bgMap = {'Makanan':'#FFF7ED','Minuman':'#F0F9FF','Paket':'#F0FDF4','Tambahan':'#FAFAFA','Sayuran':'#F0FDF4'};
+  const bg = bgMap[item.category] || '#F8FAFC';
+  return `
+    <div class="food-card" onclick="${clickFn}">
+      <div class="food-img" style="background:${bg}">
+        <div class="fc-badges">
+          ${isBest ? '<span class="badge badge-hot">🔥 Best</span>' : ''}
+          ${isCheap ? '<span class="badge badge-cheap">💚 Hemat</span>' : ''}
+        </div>
+        ${emo}
+      </div>
+      <div class="food-body">
+        <div class="food-name">${item.name}</div>
+        <div class="food-umkm">🏪 ${umkmName}</div>
+        <div class="food-footer">
+          <div class="food-price">${fmtPrice(item.price)}</div>
+          <div class="food-meta">
+            <div class="star-row"><span class="star-icon">★</span> ${(4.5 + Math.random()*0.5).toFixed(1)}</div>
+            <button class="add-btn" id="addbtn-${item.id}" onclick="event.stopPropagation();addToCart('${item.id}','${item.name}',${item.price},'${umkmName}',this)">+</button>
+          </div>
+        </div>
+      </div>
+    </div>`;
+}
+
+function renderTrending(){
+  const grid = document.getElementById('trendingGrid');
+  const top = allMenu.slice(0, 8);
+  if(!top.length){ grid.innerHTML = '<div class="empty-state"><div class="empty-icon">🍽️</div><div class="empty-title">Belum ada menu</div></div>'; return; }
+  grid.innerHTML = top.map(m => {
+    const u = allUmkm.find(u=>u.id===m.umkm_id);
+    return makeFoodCard(m, u?.nama||'UMKM', m.is_best_seller, m.price<12000, `openDetail('${m.umkm_id}')`);
+  }).join('');
+}
+
+function renderCheap(){
+  const grid = document.getElementById('cheapGrid');
+  const cheap = allMenu.filter(m=>m.price<=12000).slice(0, 6);
+  if(!cheap.length){ grid.innerHTML = ''; return; }
+  grid.innerHTML = cheap.map(m => {
+    const u = allUmkm.find(u=>u.id===m.umkm_id);
+    return makeFoodCard(m, u?.nama||'UMKM', false, true, `openDetail('${m.umkm_id}')`);
+  }).join('');
+}
+
+function renderVideoTeaser(){
+  const wrap = document.getElementById('videoTeaser');
+  if(!allVideos.length){ wrap.innerHTML=''; return; }
+  wrap.innerHTML = allVideos.slice(0,6).map(v=>{
+    const u = allUmkm.find(u=>u.id===v.umkm_id);
+    const emo = catEmoji[u?.category] || '🍽️';
+    return `
+      <div class="food-card" onclick="navigate('reels')" style="cursor:pointer">
+        <div class="food-img" style="background:#0F172A;position:relative">
+          <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(15,23,42,0.9) 0%,transparent 60%);z-index:1"></div>
+          <span style="font-size:52px;opacity:0.4">${emo}</span>
+          <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:2">
+            <div style="width:36px;height:36px;background:rgba(255,255,255,0.2);border-radius:50%;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px)">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            </div>
+          </div>
+          <div style="position:absolute;bottom:10px;left:10px;right:10px;z-index:2">
+            <div style="color:#fff;font-size:11px;font-weight:700;line-height:1.3">${v.food_name||v.caption.slice(0,30)}</div>
+            <div style="color:var(--accent);font-size:11px;font-weight:800;margin-top:2px">${fmtPrice(v.food_price||0)}</div>
+          </div>
+        </div>
+        <div class="food-body" style="padding:10px">
+          <div class="food-umkm" style="font-size:11px">🏪 ${u?.nama||'UMKM'}</div>
+          <div style="display:flex;gap:8px;font-size:11px;color:var(--text3);margin-top:4px">
+            <span>❤️ ${fmtNum(v.likes)}</span>
+            <span>👁 ${fmtNum(v.views)}</span>
+          </div>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+// ===================== RENDER: UMKM LIST =====================
+function renderUmkm(list){
+  const grid = document.getElementById('umkmGrid');
+  document.getElementById('exploreCount').textContent = `${list.length} warung ditemukan`;
+  if(!list.length){ grid.innerHTML='<div class="empty-state"><div class="empty-icon">🔍</div><div class="empty-title">Tidak ada warung ditemukan</div></div>'; return; }
+  grid.innerHTML = list.map(u=>{
+    const emo = catEmoji[u.category]||'🍽️';
+    const tags = (u.tags||[]).map(t=>{
+      const cls = t==='popular'?'hot':t==='cheap'?'cheap':t==='fast'?'fast':'';
+      const labels = {popular:'🔥 Populer',cheap:'💚 Murah',fast:'⚡ Cepat',healthy:'💚 Sehat',coffee:'☕',night:'🌙 Buka Malam',nasi:'🍚',ayam:'🍗',mie:'🍜',bakso:'🥢',sayur:'🥗',padang:'🍛'};
+      return `<span class="utag ${cls}">${labels[t]||t}</span>`;
+    }).join('');
+    return `
+      <div class="umkm-card" onclick="openDetail('${u.id}')">
+        <div class="umkm-avatar">${emo}</div>
+        <div class="umkm-info">
+          <div class="umkm-name">${u.nama}</div>
+          <div class="umkm-tags">${tags}</div>
+          <div class="umkm-rating-big"><span style="color:var(--accent)">★</span>${u.umkm_rating||'N/A'} <span style="color:var(--text3);font-size:12px;font-weight:500">· ${fmtNum(u.total_reviews)} ulasan</span></div>
+          <div class="umkm-row">
+            <span>📍 ${u.distance_meters}m</span>
+            <span>·</span>
+            <span>${u.open_time}–${u.close_time}</span>
+            <span>·</span>
+            <span>mulai ${fmtPrice(u.min_price)}</span>
+          </div>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function setFilter(el, type){
+  document.querySelectorAll('.filter-pill').forEach(p=>p.classList.remove('active'));
+  el.classList.add('active');
+  currentFilter = type;
+  let list = [...allUmkm];
+  if(type==='rating') list.sort((a,b)=>(b.umkm_rating||0)-(a.umkm_rating||0));
+  else if(type==='price') list.sort((a,b)=>(a.min_price||0)-(b.min_price||0));
+  else if(type==='distance') list.sort((a,b)=>(a.distance_meters||0)-(b.distance_meters||0));
+  else if(type==='open') list = list.filter(u=>u.is_open);
+  renderUmkm(list);
+}
+
+function filterByCategory(el, cat){
+  document.querySelectorAll('.cat-chip').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+  navigate('explore');
+  const list = cat==='all' ? allUmkm : allUmkm.filter(u=>u.category===cat);
+  renderUmkm(list);
+}
+
+// ===================== DETAIL PAGE =====================
+async function openDetail(umkmId){
+  navigate('detail');
+  currentUmkmId = umkmId;
+  const u = allUmkm.find(u=>u.id===umkmId);
+  if(!u) return;
+  const emo = catEmoji[u.category]||'🍽️';
+  const menu = allMenu.filter(m=>m.umkm_id===umkmId);
+  const reviews = allReviews.filter(r=>r.umkm_id===umkmId);
+
+  document.getElementById('detailHero').innerHTML = `
+    <div class="detail-emoji-wrap">${emo}</div>
+    <div class="detail-info">
+      <div class="detail-name">${u.nama}</div>
+      <div class="detail-desc">${u.description||u.lokasi||''} · ${u.open_time}–${u.close_time}</div>
+      <div class="detail-stats-row">
+        <div class="ds"><div class="ds-val">${u.umkm_rating||'N/A'}</div><div class="ds-lbl">⭐ Rating</div></div>
+        <div class="ds-div"></div>
+        <div class="ds"><div class="ds-val">${fmtNum(u.total_reviews)}</div><div class="ds-lbl">💬 Ulasan</div></div>
+        <div class="ds-div"></div>
+        <div class="ds"><div class="ds-val">${u.distance_meters}m</div><div class="ds-lbl">📍 Jarak</div></div>
+        <div class="ds-div"></div>
+        <div class="ds"><div class="ds-val">${u.is_open?'Buka':'Tutup'}</div><div class="ds-lbl">🕐 Status</div></div>
+      </div>
+    </div>`;
+
+  const bestSellers = menu.filter(m=>m.is_best_seller);
+  const others = menu.filter(m=>!m.is_best_seller);
+
+  function menuItemHTML(m, i){
+    const emo2 = getMenuEmoji(m.category, i);
+    const qtyInCart = cart[m.id]?.qty || 0;
+    return `
+      <div class="menu-item">
+        <div class="mi-emoji">${emo2}</div>
+        <div class="mi-info">
+          <div class="mi-name">${m.name}${m.is_best_seller?'<span class="mi-best">BEST</span>':''}</div>
+          <div class="mi-desc">${m.description||''}</div>
+          <div class="mi-price">${fmtPrice(m.price)}</div>
+        </div>
+        <div class="qty-ctrl">
+          <button class="qty-btn" onclick="changeQty('${m.id}','${m.name}',${m.price},'${u.nama}',-1,this)">−</button>
+          <span class="qty-num" id="qty-${m.id}">${qtyInCart}</span>
+          <button class="qty-btn plus" onclick="changeQty('${m.id}','${m.name}',${m.price},'${u.nama}',1,this)">+</button>
+        </div>
+      </div>`;
+  }
+
+  const reviewsHTML = reviews.length ? reviews.slice(0,5).map(r=>`
+    <div class="review-card">
+      <div class="review-top">
+        <div class="rev-ava">${String.fromCharCode(65+Math.random()*26|0)}</div>
+        <div><div class="rev-name">Mahasiswa IPB</div><div class="rev-date">${formatDate(r.created_at)}</div></div>
+        <div class="rev-stars">${'★'.repeat(r.review_rating)}</div>
+      </div>
+      <div class="rev-comment">${r.comment||''}</div>
+    </div>`).join('') : '<div class="empty-state" style="padding:24px"><div class="empty-text">Belum ada ulasan</div></div>';
+
+  document.getElementById('detailContent').innerHTML = `
+    <div>
+      ${bestSellers.length ? `
+      <div class="menu-section">
+        <div class="menu-section-head"><div class="menu-section-title">⭐ Best Seller</div></div>
+        <div class="menu-items-wrap">${bestSellers.map((m,i)=>menuItemHTML(m,i)).join('')}</div>
+      </div>` : ''}
+      ${others.length ? `
+      <div class="menu-section" style="margin-top:16px">
+        <div class="menu-section-head"><div class="menu-section-title">📋 Menu Lengkap</div><span style="font-size:12px;color:var(--text3)">${others.length} item</span></div>
+        <div class="menu-items-wrap">${others.map((m,i)=>menuItemHTML(m,i)).join('')}</div>
+      </div>` : ''}
+      <div class="reviews-section">
+        <div class="reviews-head"><div class="section-title">💬 Ulasan Pelanggan</div></div>
+        ${reviewsHTML}
+      </div>
+    </div>
+    <div>
+      <div class="order-panel">
+        <div class="op-head"><div class="op-title">🛒 Pesanan Kamu</div></div>
+        <div id="orderPanelItems"></div>
+        <div class="op-summary" id="orderPanelSummary" style="display:none">
+          <div class="op-row"><span>Subtotal</span><span id="opSubtotal">—</span></div>
+          <div class="op-row discount"><span>Diskon Pre-Order</span><span id="opDiscount">—</span></div>
+          <div class="op-row final"><span>Total</span><span id="opTotal">—</span></div>
+        </div>
+        <button class="op-btn" id="opOrderBtn" onclick="navigate('checkout')" disabled>Pre-Order Sekarang</button>
+      </div>
+    </div>`;
+  updateOrderPanel();
+}
+
+// ===================== CART =====================
+function addToCart(id, name, price, umkmName, btn){
+  if(!cart[id]) cart[id] = { name, price, umkmName, qty:0 };
+  cart[id].qty++;
+  updateCartBadge();
+  updateOrderPanel();
+  if(btn){ btn.textContent='✓'; btn.classList.add('added'); setTimeout(()=>{ btn.textContent='+'; btn.classList.remove('added'); },1200); }
+  toast(`${name} ditambahkan ke keranjang`, 'success');
+}
+
+function changeQty(id, name, price, umkmName, delta, btn){
+  if(!cart[id]) cart[id] = { name, price, umkmName, qty:0 };
+  cart[id].qty = Math.max(0, cart[id].qty + delta);
+  if(cart[id].qty === 0) delete cart[id];
+  const el = document.getElementById('qty-'+id);
+  if(el) el.textContent = cart[id]?.qty || 0;
+  updateCartBadge();
+  updateOrderPanel();
+}
+
+function updateCartBadge(){
+  const total = Object.values(cart).reduce((s,i)=>s+i.qty,0);
+  const badge = document.getElementById('cartBadge');
+  const dot = document.getElementById('cartDot');
+  if(total>0){
+    badge.textContent=total; badge.style.display='';
+    dot.style.display='';
+  } else {
+    badge.style.display='none';
+    dot.style.display='none';
+  }
+}
+
+function updateOrderPanel(){
+  const items = document.getElementById('orderPanelItems');
+  const summary = document.getElementById('orderPanelSummary');
+  const btn = document.getElementById('opOrderBtn');
+  if(!items) return;
+  const cartItems = Object.entries(cart);
+  if(!cartItems.length){
+    items.innerHTML='<div class="op-empty"><div class="op-empty-icon">🛒</div>Keranjang masih kosong</div>';
+    summary?.style && (summary.style.display='none');
+    if(btn) btn.disabled=true;
+    return;
+  }
+  items.innerHTML = cartItems.map(([id,item])=>`
+    <div class="op-item">
+      <div><div class="op-item-name">${item.name}</div><div class="op-item-qty">× ${item.qty}</div></div>
+      <div class="op-item-price">${fmtPrice(item.price*item.qty)}</div>
+    </div>`).join('');
+  const sub = cartItems.reduce((s,[,i])=>s+i.price*i.qty,0);
+  const disc = Math.round(sub*0.1);
+  const total = sub - disc;
+  if(summary){ summary.style.display=''; }
+  const opSub = document.getElementById('opSubtotal');
+  const opDisc = document.getElementById('opDiscount');
+  const opTot = document.getElementById('opTotal');
+  if(opSub) opSub.textContent = fmtPrice(sub);
+  if(opDisc) opDisc.textContent = '−'+fmtPrice(disc);
+  if(opTot) opTot.textContent = fmtPrice(total);
+  if(btn) btn.disabled=false;
+  if(btn) btn.textContent=`Pre-Order Sekarang · ${fmtPrice(total)}`;
+}
+
+// ===================== CHECKOUT =====================
+function renderCheckout(){
+  const items = document.getElementById('checkoutItems');
+  const totalDiv = document.getElementById('checkoutTotal');
+  const confirmDiv = document.getElementById('confirmItems');
+  const payBtn = document.getElementById('payBtn');
+  const cartItems = Object.entries(cart);
+  if(!cartItems.length){
+    items.innerHTML='<div class="empty-state"><div class="empty-icon">🛒</div><div class="empty-title">Keranjang masih kosong</div><div class="empty-text">Pilih menu dari halaman warung dulu ya!</div></div>';
+    totalDiv.style.display='none';
+    confirmDiv.innerHTML='';
+    payBtn.disabled=true;
+    return;
+  }
+  const sub = cartItems.reduce((s,[,i])=>s+i.price*i.qty,0);
+  const disc = Math.round(sub*0.1);
+  const total = sub-disc;
+  items.innerHTML = cartItems.map(([id,item])=>`
+    <div class="order-summary-item">
+      <div class="osi-left">
+        <div class="osi-emoji">🍽️</div>
+        <div><div class="osi-name">${item.name}</div><div class="osi-qty">× ${item.qty}</div></div>
+      </div>
+      <div class="osi-price">${fmtPrice(item.price*item.qty)}</div>
+    </div>`).join('');
+  totalDiv.style.display='';
+  document.getElementById('subtotalVal').textContent=fmtPrice(sub);
+  document.getElementById('discountVal').textContent='−'+fmtPrice(disc);
+  document.getElementById('totalVal').textContent=fmtPrice(total);
+  confirmDiv.innerHTML=`
+    <div style="background:var(--surface);border-radius:var(--r-md);padding:14px;font-size:13px;margin-bottom:16px">
+      <div style="font-weight:800;margin-bottom:8px">Ringkasan</div>
+      ${cartItems.map(([,i])=>`<div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="color:var(--text2)">${i.name} ×${i.qty}</span><span style="font-weight:700">${fmtPrice(i.price*i.qty)}</span></div>`).join('')}
+      <div style="border-top:1px solid var(--border);margin-top:8px;padding-top:8px;display:flex;justify-content:space-between;font-weight:800"><span>Total</span><span style="color:var(--accent)">${fmtPrice(total)}</span></div>
+    </div>`;
+  payBtn.disabled=false;
+  payBtn.textContent=`Konfirmasi & Bayar · ${fmtPrice(total)}`;
+}
+
+function pickTime(el){
+  document.querySelectorAll('.time-slot:not(.full)').forEach(s=>s.classList.remove('active'));
+  el.classList.add('active');
+}
+
+async function confirmOrder(){
+  const btn = document.getElementById('payBtn');
+  btn.textContent='⏳ Memproses...';
+  btn.disabled=true;
+  btn.style.background='var(--surface2)';
+  btn.style.color='var(--text2)';
+  btn.style.boxShadow='none';
+  await new Promise(r=>setTimeout(r,1500));
+  // Clear cart
+  cart = {};
+  updateCartBadge();
+  btn.style.background='';
+  btn.style.color='';
+  btn.style.boxShadow='';
+  btn.textContent='✅ Pesanan Dikonfirmasi! #A47';
+  btn.style.background='var(--green)';
+  toast('Pesanan berhasil! Nomor antrean #A47 · Siap dalam ±15 menit', 'success');
+  renderCheckout();
+}
+
+// ===================== REELS =====================
+function renderReels(){
+  const feed = document.getElementById('reelsFeed');
+  const sidebar = document.getElementById('reelsSidebar');
+  if(!allVideos.length){
+    feed.innerHTML='<div style="height:100%;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.4)">Belum ada video</div>';
+    return;
+  }
+  const reelColors = ['#1a0a00','#001a0a','#0a001a','#1a0010','#00101a'];
+  feed.innerHTML = allVideos.map((v,i)=>{
+    const u = allUmkm.find(u=>u.id===v.umkm_id);
+    const emo = catEmoji[u?.category]||'🍽️';
+    return `
+      <div class="reel" style="background:${reelColors[i%reelColors.length]}">
+        <div class="reel-bg-emoji" style="animation-delay:${i*0.5}s">${emo}</div>
+        <div class="reel-gradient"></div>
+        <div class="reel-progress">${allVideos.map((_,j)=>`<div class="rp-bar${j===i?' active':''}"></div>`).join('')}</div>
+        <div class="reel-content">
+          <div class="reel-umkm-row">
+            <div class="reel-umkm-av">${emo}</div>
+            <span class="reel-umkm-name">${u?.nama||'UMKM'}</span>
+            <button class="reel-follow-btn">+ Follow</button>
+          </div>
+          <div class="reel-food-name">${v.food_name||v.caption.slice(0,40)}</div>
+          <div class="reel-desc">${v.caption}</div>
+          <div class="reel-price-row">
+            <div class="reel-price">${fmtPrice(v.food_price||0)}</div>
+            <div class="reel-likes">❤️ ${fmtNum(v.likes)} suka</div>
+          </div>
+          <button class="reel-order-btn" onclick="openDetail('${v.umkm_id}')">🛒 Order Sekarang</button>
+        </div>
+        <div class="reel-actions">
+          <div class="reel-action" onclick="likeReel(this,${v.id?`'${v.id}'`:'null'})">
+            <div class="ra-icon">❤️</div><div class="ra-lbl">${fmtNum(v.likes)}</div>
+          </div>
+          <div class="reel-action"><div class="ra-icon">💬</div><div class="ra-lbl">Komen</div></div>
+          <div class="reel-action"><div class="ra-icon">↗️</div><div class="ra-lbl">Share</div></div>
+          <div class="reel-action"><div class="ra-icon">🔖</div><div class="ra-lbl">Simpan</div></div>
+        </div>
+      </div>`;
+  }).join('');
+
+  if(sidebar) sidebar.innerHTML = allVideos.map(v=>{
+    const u = allUmkm.find(u=>u.id===v.umkm_id);
+    const emo = catEmoji[u?.category]||'🍽️';
+    return `
+      <div class="rs-item" onclick="navigate('reels')">
+        <div class="rs-thumb">${emo}</div>
+        <div>
+          <div class="rs-name">${v.food_name||v.caption.slice(0,25)}</div>
+          <div class="rs-price">${fmtPrice(v.food_price||0)}</div>
+          <div class="rs-views">👁 ${fmtNum(v.views)} · ❤️ ${fmtNum(v.likes)}</div>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+async function likeReel(el, id){
+  const lbl = el.querySelector('.ra-lbl');
+  const n = parseInt(lbl.textContent.replace('k','000').replace('.',''))||0;
+  lbl.textContent = fmtNum(n+1);
+  el.querySelector('.ra-icon').textContent = '❤️';
+  if(id) await sb.from('videos').update({likes: n+1}).eq('id', id);
+}
+
+// ===================== DASHBOARD =====================
+function renderBusyChart(){
+  const hours = ['07','08','09','10','11','12','13','14','15','16','17','18','19'];
+  const vals  = [15,28,40,45,88,100,82,35,25,20,55,42,18];
+  const chart = document.getElementById('busyChart');
+  if(!chart) return;
+  const peak = [4,5,6]; // indices of peak hours
+  chart.innerHTML = hours.map((h,i)=>`
+    <div class="bar-wrap">
+      <div class="bar${peak.includes(i)?' peak':''}" style="height:${vals[i]}%"
+        title="${vals[i]} pesanan jam ${h}:00"
+        onmouseenter="this.style.opacity='.75'" onmouseleave="this.style.opacity=''">
+      </div>
+      <div class="bar-lbl">${h}</div>
+    </div>`).join('');
+}
+
+function renderTopMenu(){
+  const wrap = document.getElementById('topMenu');
+  if(!wrap) return;
+  const umkm1Menu = allMenu.filter(m=>m.umkm_id==='a1b2c3d4-0001-0001-0001-000000000001')
+    .sort((a,b)=>b.total_sold-a.total_sold).slice(0,5);
+  if(!umkm1Menu.length){ wrap.innerHTML='<div class="empty-state" style="padding:20px"><div class="empty-text">Data menu belum tersedia</div></div>'; return; }
+  const rankClass = ['r1','r2','','',''];
+  wrap.innerHTML = umkm1Menu.map((m,i)=>`
+    <div class="top-menu-item">
+      <div class="rank ${rankClass[i]||''}">${i+1}</div>
+      <div style="flex:1">
+        <div class="tm-name">${m.name}</div>
+        <div class="tm-sold">${fmtNum(m.total_sold)} porsi terjual</div>
+      </div>
+      <div class="tm-rev">${fmtPrice(m.price*m.total_sold)}</div>
+    </div>`).join('');
+  // Update metric
+  const tot = allUmkm.find(u=>u.id==='a1b2c3d4-0001-0001-0001-000000000001');
+  if(tot){ document.getElementById('mRating').textContent = tot.umkm_rating||'4.9'; }
+  const revCount = allReviews.filter(r=>r.umkm_id==='a1b2c3d4-0001-0001-0001-000000000001').length;
+  document.getElementById('mReviews').textContent = revCount||'—';
+  // AI sidebar
+  const el1 = document.getElementById('aiMenuCount');
+  const el2 = document.getElementById('aiReviewCount');
+  if(el1) el1.textContent = umkm1Menu.length + ' menu';
+  if(el2) el2.textContent = revCount + ' ulasan';
+}
+
+function renderDashReviews(){
+  const wrap = document.getElementById('dashReviews');
+  if(!wrap) return;
+  const revs = allReviews.filter(r=>r.umkm_id==='a1b2c3d4-0001-0001-0001-000000000001').slice(0,4);
+  if(!revs.length){ wrap.innerHTML='<div class="empty-state" style="padding:20px"><div class="empty-text">Belum ada ulasan</div></div>'; return; }
+  wrap.innerHTML = revs.map(r=>`
+    <div class="review-card">
+      <div class="review-top">
+        <div class="rev-ava">${String.fromCharCode(65+Math.random()*26|0)}</div>
+        <div><div class="rev-name">Mahasiswa IPB</div><div class="rev-date">${formatDate(r.created_at)}</div></div>
+        <div class="rev-stars">${'★'.repeat(r.review_rating)}<span style="color:var(--text3)">${'☆'.repeat(5-r.review_rating)}</span></div>
+      </div>
+      <div class="rev-comment">${r.comment||'—'}</div>
+    </div>`).join('');
+}
+
+function loadDashboard(){
+  renderBusyChart();
+  renderTopMenu();
+  renderDashReviews();
+}
+
+// ===================== AI CHAT =====================
+const aiResponses = {
+  'harga':['Berdasarkan data pasar kampus IPB, harga ideal untuk menu mahasiswa adalah Rp 8.000–25.000. Ayam bakar di Rp 18.000 sudah sangat kompetitif! Pertimbangkan paket bundling: Ayam + Nasi + Minuman seharga Rp 25.000 (hemat 10%) untuk meningkatkan nilai transaksi rata-rata. 💡'],
+  'menu':['Tren menu kampus saat ini: 1) Rice bowl dengan topping beragam (margin tinggi!) 2) Minuman kekinian seperti matcha latte & teh susu 3) Snack sore (gorengan, cireng) untuk jam 14-16. Data menunjukkan 78% pelangganmu tidak memesan minuman — ini peluang besar! 🍹'],
+  'promosi':['3 strategi promosi paling efektif untuk warung kampus: 1) Pre-order discount 10% (sudah ada di IPB Makan!) 2) Paket makan siang bundling jam 11-13 3) Program loyalty: beli 9 gratis 1. Video feed di IPB Makan juga bisa tingkatkan visibilitas 3x lipat! 📣'],
+  'sepi':['Jam sepi warungmu: 14.00-16.00 & 09.00-10.00. Strategi: 1) Happy Hour 15% off jam 14-16 via pre-order 2) Paket sarapan Rp 10.000 untuk kelas pagi 3) Gorengan + teh sore Rp 8.000 (margin 60%). Potensi tambahan Rp 200k/hari dari jam sepi! ⏰'],
+};
+function getAIResponse(msg){
+  const lower = msg.toLowerCase();
+  for(const [key, resps] of Object.entries(aiResponses)){
+    if(lower.includes(key)) return resps[0];
+  }
+  return `Pertanyaan menarik! Berdasarkan data warung Bu Sari, saya melihat ada beberapa peluang untuk meningkatkan bisnis terkait "${msg}". Coba tanyakan lebih spesifik tentang: harga, menu, promosi, atau strategi mengatasi jam sepi ya! 🤖`;
+}
+
+function askAI(text){
+  const input = document.getElementById('chatInput');
+  input.value = text;
+  sendChat();
+}
+
+function sendChat(){
+  const input = document.getElementById('chatInput');
+  const text = input.value.trim();
+  if(!text) return;
+  const msgs = document.getElementById('chatMessages');
+  const now = new Date().toLocaleTimeString('id',{hour:'2-digit',minute:'2-digit'});
+
+  // User message
+  msgs.innerHTML += `
+    <div class="msg user">
+      <div class="msg-bubble">${text}</div>
+      <div class="msg-time">${now}</div>
+    </div>`;
+  input.value = '';
+  msgs.scrollTop = msgs.scrollHeight;
+
+  // AI thinking
+  const thinkId = 'think-'+Date.now();
+  msgs.innerHTML += `<div class="msg ai" id="${thinkId}"><div class="msg-bubble" style="color:var(--text3)">💭 Menganalisis data warungmu...</div></div>`;
+  msgs.scrollTop = msgs.scrollHeight;
+
+  setTimeout(()=>{
+    const el = document.getElementById(thinkId);
+    if(el) el.remove();
+    msgs.innerHTML += `
+      <div class="msg ai">
+        <div class="msg-bubble">${getAIResponse(text)}</div>
+        <div class="msg-time">${new Date().toLocaleTimeString('id',{hour:'2-digit',minute:'2-digit'})}</div>
+      </div>`;
+    msgs.scrollTop = msgs.scrollHeight;
+  }, 900);
+}
+
+// ===================== SEARCH =====================
+function handleSearch(val){
+  if(!val.trim()){ return; }
+  navigate('explore');
+  const q = val.toLowerCase();
+  const filtered = allUmkm.filter(u=>
+    u.nama.toLowerCase().includes(q) ||
+    (u.category||'').toLowerCase().includes(q) ||
+    (u.description||'').toLowerCase().includes(q)
+  );
+  renderUmkm(filtered.length ? filtered : allUmkm);
+}
+
+// ===================== UTILS =====================
+function fmtPrice(n){ return 'Rp '+Number(n).toLocaleString('id'); }
+function fmtNum(n){
+  if(n>=1000) return (n/1000).toFixed(1).replace('.0','')+'k';
+  return n;
+}
+function formatDate(d){
+  if(!d) return '';
+  return new Date(d).toLocaleDateString('id',{day:'numeric',month:'short',year:'numeric'});
+}
+
+// ===================== RESPONSIVE =====================
+function handleResize(){
+  const menuBtn = document.getElementById('menuBtn');
+  if(window.innerWidth<=900){
+    menuBtn.style.display='block';
+  } else {
+    menuBtn.style.display='none';
+    document.getElementById('sidebar').classList.remove('open');
+  }
+}
+window.addEventListener('resize', handleResize);
+handleResize();
+
+// ===================== INIT =====================
+loadAll();
+</script>
+</body>
+</html>
